@@ -9,13 +9,10 @@
 </head>
 <body>
 
-  <!-- ================================================
-       BARRA SUPERIOR (header fixo)
-       ================================================ -->
   <header class="topbar">
     <div class="topbar__inner">
       <div class="topbar__brand">
-        <!-- Ícone SVG da marca -->
+        
         <svg class="topbar__logo" viewBox="0 0 28 28" fill="none" aria-hidden="true">
           <circle cx="14" cy="14" r="13" stroke="currentColor" stroke-width="1.6"/>
           <circle cx="14" cy="14" r="5" fill="currentColor"/>
@@ -28,9 +25,9 @@
       </div>
 
       <div class="topbar__actions">
-        <!-- Botão de tema -->
+       
         <button class="icon-btn" id="themeToggle" type="button" aria-label="Alternar tema claro/escuro">
-          <!-- Sol (modo claro) -->
+        
           <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <circle cx="12" cy="12" r="5"/>
             <line x1="12" y1="1"  x2="12" y2="3"/>
@@ -42,7 +39,6 @@
             <line x1="4.22" y1="19.78" x2="5.64"  y2="18.36"/>
             <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
           </svg>
-          <!-- Lua (modo escuro) -->
           <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
           </svg>
@@ -53,12 +49,8 @@
 
   <main class="app-layout">
 
-    <!-- ================================================
-         SIDEBAR (navegação / filtros / estatísticas)
-         ================================================ -->
     <aside class="sidebar" id="sidebar">
 
-      <!-- Dashboard — estatísticas -->
       <section class="stats-panel" aria-labelledby="statsTitle">
         <h2 class="panel-label" id="statsTitle">Visão Geral</h2>
         <div class="stats-grid">
@@ -80,7 +72,6 @@
           </div>
         </div>
 
-        <!-- Barra de progresso -->
         <div class="progress-section">
           <div class="progress-header">
             <span>Progresso</span>
@@ -92,7 +83,6 @@
         </div>
       </section>
 
-      <!-- Filtros -->
       <section class="filter-panel" aria-labelledby="filterTitle">
         <h2 class="panel-label" id="filterTitle">Filtrar</h2>
         <nav class="filter-nav" aria-label="Filtros de status">
@@ -136,7 +126,6 @@
         </nav>
       </section>
 
-      <!-- Ordenação -->
       <section class="sort-panel" aria-labelledby="sortTitle">
         <h2 class="panel-label" id="sortTitle">Ordenar</h2>
         <div class="sort-select-wrap">
@@ -152,12 +141,8 @@
 
     </aside>
 
-    <!-- ================================================
-         CONTEÚDO PRINCIPAL
-         ================================================ -->
     <section class="main-content">
 
-      <!-- Cabeçalho com pesquisa -->
       <div class="content-header">
         <div class="search-wrap">
           <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
@@ -178,7 +163,6 @@
           </button>
         </div>
 
-        <!-- Botão menu mobile para sidebar -->
         <button class="sidebar-toggle icon-btn" id="sidebarToggle" type="button" aria-label="Abrir filtros" aria-expanded="false" aria-controls="sidebar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
             <line x1="3" y1="6"  x2="21" y2="6"/>
@@ -188,7 +172,6 @@
         </button>
       </div>
 
-      <!-- Formulário de nova tarefa -->
       <div class="add-task-card glass-card">
         <h2 class="add-task-title">Nova tarefa</h2>
 
@@ -239,13 +222,10 @@
         </div>
       </div>
 
-      <!-- Contagem de resultados -->
       <div class="result-info" id="resultInfo" aria-live="polite"></div>
 
-      <!-- Lista de tarefas -->
       <div class="task-list" id="taskList" role="list" aria-label="Lista de tarefas"></div>
 
-      <!-- Estado vazio -->
       <div class="empty-state" id="emptyState" hidden>
         <svg class="empty-illustration" viewBox="0 0 220 180" fill="none" aria-hidden="true">
           <rect x="30" y="30" width="160" height="120" rx="12" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 4"/>
@@ -261,12 +241,8 @@
     </section>
   </main>
 
-  <!-- Overlay para sidebar mobile -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-  <!-- ================================================
-       MODAL DE CONFIRMAÇÃO DE EXCLUSÃO
-       ================================================ -->
   <div class="modal-backdrop" id="deleteModal" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle" hidden>
     <div class="modal-box">
       <div class="modal-icon">
@@ -286,9 +262,6 @@
     </div>
   </div>
 
-  <!-- ================================================
-       CONTAINER DE TOASTS (notificações)
-       ================================================ -->
   <div class="toast-container" id="toastContainer" aria-live="assertive" aria-atomic="false"></div>
 
   <script src="script.js"></script>

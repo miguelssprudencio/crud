@@ -1,22 +1,12 @@
-/* =========================================================================
-   Focus — script.js
-   Organização: Store → Render → UI Modules → Init
-   Sem frameworks ou bibliotecas externas. ES6+ (arrow functions, spread, etc.)
-   ========================================================================= */
-
 'use strict';
 
-/* =========================================================================
-   MÓDULO: Store — estado global e persistência no LocalStorage
-   ========================================================================= */
 const Store = (() => {
   const KEY_TASKS = 'focus_tasks_v1';
   const KEY_THEME = 'focus_theme_v1';
   const KEY_ORDER = 'focus_order_v1';
 
   let tasks = [];
-
-  /* Carrega tarefas salvas; migra se necessário */
+ 
   function load() {
     try {
       const raw = localStorage.getItem(KEY_TASKS);
@@ -25,7 +15,7 @@ const Store = (() => {
     } catch {
       tasks = [];
     }
-    // Garante campos obrigatórios em registros antigos
+    
     tasks = tasks.map(t => ({
       id:        t.id        || uid(),
       title:     t.title     || '',
@@ -41,7 +31,7 @@ const Store = (() => {
   function save() {
     try {
       localStorage.setItem(KEY_TASKS, JSON.stringify(tasks));
-    } catch { /* quota exceeded — silencia */ }
+    } catch {  }
   }
 
   function getTheme() {
@@ -51,7 +41,7 @@ const Store = (() => {
     localStorage.setItem(KEY_THEME, val);
   }
 
-  /* ---- CRUD ---- */
+
   function getAll() { return tasks; }
 
   function add({ title, category, priority, dueDate }) {
@@ -87,7 +77,7 @@ const Store = (() => {
     if (dragIdx === -1 || targetIdx === -1) return;
     const [dragged] = tasks.splice(dragIdx, 1);
     tasks.splice(targetIdx, 0, dragged);
-    // Reatribui sortOrder para preservar ordem
+    
     tasks.forEach((t, i) => { t.sortOrder = tasks.length - i; });
     save();
   }
@@ -99,13 +89,9 @@ const Store = (() => {
   return { load, getAll, add, update, remove, reorder, getTheme, setTheme };
 })();
 
-
-/* =========================================================================
-   MÓDULO: Filter — estado dos filtros ativos
-   ========================================================================= */
 const Filter = (() => {
   let state = {
-    status:   'all',  // all | pending | done
+    status:   'all', 
     cat:      'all',
     priority: 'all',
     sort:     'newest',
@@ -115,7 +101,7 @@ const Filter = (() => {
   function get()               { return { ...state }; }
   function set(patch)          { Object.assign(state, patch); }
 
-  /* Aplica filtros e ordenação sobre o array de tarefas */
+
   function apply(tasks) {
     const { status, cat, priority, sort, query } = state;
     const q = query.toLowerCase().trim();
@@ -147,13 +133,10 @@ const Filter = (() => {
 })();
 
 
-/* =========================================================================
-   MÓDULO: Toast — notificações flutuantes
-   ========================================================================= */
+
 const Toast = (() => {
   const container = document.getElementById('toastContainer');
 
-  /* SVG icons para cada tipo de toast */
   const icons = {
     success: `<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>`,
     error:   `<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
@@ -181,9 +164,7 @@ const Toast = (() => {
 })();
 
 
-/* =========================================================================
-   MÓDULO: Modal — confirmação de exclusão
-   ========================================================================= */
+
 const Modal = (() => {
   const backdrop    = document.getElementById('deleteModal');
   const cancelBtn   = document.getElementById('cancelDelete');
@@ -215,9 +196,7 @@ const Modal = (() => {
 })();
 
 
-/* =========================================================================
-   MÓDULO: Render — gera e atualiza o DOM das tarefas
-   ========================================================================= */
+
 const Render = (() => {
 
   const taskList  = document.getElementById('taskList');
@@ -226,14 +205,12 @@ const Render = (() => {
   const emptySub   = document.getElementById('emptySub');
   const resultInfo = document.getElementById('resultInfo');
 
-  /* Labels amigáveis para exibir nos badges */
   const catLabels = {
     work: 'Trabalho', study: 'Estudos',
     personal: 'Pessoal', health: 'Saúde', other: 'Outros',
   };
   const prioLabels = { high: 'Alta', medium: 'Média', low: 'Baixa' };
 
-  /* Formata data ISO para exibição legível */
   function formatDate(iso) {
     if (!iso) return null;
     const [y, m, d] = iso.split('-').map(Number);
@@ -248,7 +225,7 @@ const Render = (() => {
     return new Date(y, m - 1, d) < today;
   }
 
-  /* Cria o elemento DOM de uma tarefa */
+
   function createTaskEl(task) {
     const li = document.createElement('div');
     li.className = `task-card${task.done ? ' is-done' : ''}`;
@@ -323,9 +300,8 @@ const Render = (() => {
     return li;
   }
 
-  /* Renderiza (ou atualiza) a lista completa */
   function renderList(filtered, totalAll) {
-    // Remove filhos com animação de saída os que não estão mais no filtered
+   
     const existingIds = new Set(filtered.map(t => t.id));
     [...taskList.children].forEach(el => {
       if (!existingIds.has(el.dataset.id)) el.remove();
@@ -334,7 +310,7 @@ const Render = (() => {
     filtered.forEach((task, index) => {
       const existing = taskList.querySelector(`[data-id="${task.id}"]`);
       if (existing) {
-        // Atualiza somente a checkbox e o título para evitar re-render desnecessário
+    
         const chk = existing.querySelector('.task-checkbox');
         const titleEl = existing.querySelector('.task-title');
         if (chk) chk.checked = task.done;
@@ -348,7 +324,6 @@ const Render = (() => {
       }
     });
 
-    // Estado vazio
     const isEmpty = filtered.length === 0;
     emptyState.hidden = !isEmpty;
     if (isEmpty) {
@@ -364,7 +339,6 @@ const Render = (() => {
       }
     }
 
-    // Contagem de resultados
     if (filtered.length !== totalAll) {
       resultInfo.textContent = `Exibindo ${filtered.length} de ${totalAll} tarefa${totalAll !== 1 ? 's' : ''}`;
     } else {
@@ -372,7 +346,6 @@ const Render = (() => {
     }
   }
 
-  /* Escapa HTML para evitar XSS */
   function escHtml(str) {
     return str
       .replace(/&/g, '&amp;')
@@ -384,10 +357,6 @@ const Render = (() => {
   return { renderList };
 })();
 
-
-/* =========================================================================
-   MÓDULO: Stats — atualiza os cards de estatísticas e barra de progresso
-   ========================================================================= */
 const Stats = (() => {
   const elTotal   = document.getElementById('statTotal');
   const elDone    = document.getElementById('statDone');
@@ -417,7 +386,6 @@ const Stats = (() => {
       elBar.setAttribute('aria-valuenow', pct);
     }
 
-    // Categoria mais utilizada
     const counts = {};
     tasks.forEach(t => { counts[t.category] = (counts[t.category] || 0) + 1; });
     const topCat = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
@@ -427,10 +395,6 @@ const Stats = (() => {
   return { update };
 })();
 
-
-/* =========================================================================
-   MÓDULO: Theme — alternância claro / escuro
-   ========================================================================= */
 const Theme = (() => {
   const html      = document.documentElement;
   const toggle    = document.getElementById('themeToggle');
@@ -453,9 +417,6 @@ const Theme = (() => {
 })();
 
 
-/* =========================================================================
-   MÓDULO: DragDrop — reordenação por arrastar e soltar
-   ========================================================================= */
 const DragDrop = (() => {
   const list = document.getElementById('taskList');
   let dragId = null;
@@ -510,9 +471,6 @@ const DragDrop = (() => {
 })();
 
 
-/* =========================================================================
-   MÓDULO: SidebarMobile — controle do painel de filtros em telas pequenas
-   ========================================================================= */
 const SidebarMobile = (() => {
   const toggleBtn = document.getElementById('sidebarToggle');
   const sidebar   = document.getElementById('sidebar');
@@ -543,13 +501,8 @@ const SidebarMobile = (() => {
   return { init, close };
 })();
 
-
-/* =========================================================================
-   MÓDULO: App — ponto de entrada, une todos os módulos
-   ========================================================================= */
 const App = (() => {
 
-  /* ------- Referências de DOM ------- */
   const taskInput     = document.getElementById('taskInput');
   const catSelect     = document.getElementById('taskCategory');
   const prioSelect    = document.getElementById('taskPriority');
@@ -563,7 +516,6 @@ const App = (() => {
   const catBtns       = document.querySelectorAll('[data-cat]');
   const priorityBtns  = document.querySelectorAll('[data-priority]');
 
-  /* ------- Atualiza a renderização completa ------- */
   function refresh() {
     const all      = Store.getAll();
     const filtered = Filter.apply(all);
@@ -571,7 +523,6 @@ const App = (() => {
     Stats.update(all);
   }
 
-  /* ------- ADICIONAR tarefa ------- */
   function addTask() {
     const title = taskInput.value.trim();
     if (!title) {
@@ -594,13 +545,11 @@ const App = (() => {
     ripple(addBtn, null);
   }
 
-  /* ------- Delegação de eventos na task-list ------- */
   function handleListEvents(e) {
     const card = e.target.closest('.task-card');
     if (!card) return;
     const id = card.dataset.id;
 
-    /* Toggle conclusão */
     if (e.target.classList.contains('task-checkbox')) {
       const done = e.target.checked;
       Store.update(id, { done });
@@ -612,7 +561,6 @@ const App = (() => {
 
     const action = e.target.closest('[data-action]')?.dataset.action;
 
-    /* Editar */
     if (action === 'edit') {
       const titleEl = card.querySelector('.task-title');
       if (!titleEl || titleEl.tagName === 'INPUT') return;
@@ -642,7 +590,6 @@ const App = (() => {
       return;
     }
 
-    /* Excluir */
     if (action === 'delete') {
       Modal.open(id, (confirmedId) => {
         card.classList.add('is-removing');
@@ -655,7 +602,6 @@ const App = (() => {
     }
   }
 
-  /* ------- Filtros de status ------- */
   function initFilterBtns() {
     filterBtns.forEach(btn => {
       btn.addEventListener('click', () => {
@@ -687,7 +633,6 @@ const App = (() => {
     });
   }
 
-  /* ------- Pesquisa em tempo real ------- */
   function initSearch() {
     let debounceTimer;
     searchInput.addEventListener('input', () => {
@@ -708,7 +653,6 @@ const App = (() => {
     });
   }
 
-  /* ------- Ordenação ------- */
   function initSort() {
     sortSelect.addEventListener('change', () => {
       Filter.set({ sort: sortSelect.value });
@@ -716,7 +660,6 @@ const App = (() => {
     });
   }
 
-  /* ------- Efeito ripple no botão Adicionar ------- */
   function ripple(btn, e) {
     if (!e) {
       const span = document.createElement('span');
@@ -740,33 +683,25 @@ const App = (() => {
     span.addEventListener('animationend', () => span.remove(), { once: true });
   }
 
-  /* ------- Inicialização ------- */
   function init() {
     Store.load();
     Theme.init();
     SidebarMobile.init();
     DragDrop.init();
 
-    /* Eventos de adição */
     addBtn.addEventListener('click', e => { ripple(addBtn, e); addTask(); });
     taskInput.addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
 
-    /* Eventos da lista (delegação) */
     taskList.addEventListener('click', handleListEvents);
 
-    /* Filtros / pesquisa / ordenação */
     initFilterBtns();
     initSearch();
     initSort();
 
-    /* Render inicial */
     refresh();
   }
 
   return { init, refresh };
 })();
 
-/* =========================================================================
-   START
-   ========================================================================= */
 document.addEventListener('DOMContentLoaded', () => App.init());
